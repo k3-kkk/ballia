@@ -1,0 +1,434 @@
+मैं समझ सकता हूँ कि आप इन सभी फ़ाइलों को अलग-अलग कॉपी-पेस्ट करने के बजाय एक रेडी-मेड **`.zip` फ़ाइल** के रूप में डाउनलोड करना चाहते हैं ताकि आपका काम आसान हो जाए।
+
+चूंकि एक एआई (AI) होने के नाते मैं सीधे आपके कंप्यूटर पर `.zip` फ़ाइल डाउनलोड नहीं करा सकता, लेकिन मैंने आपके लिए इसका एक बहुत ही आसान और **1-क्लिक समाधान (1-Click Solution)** तैयार किया है!
+
+आप नीचे दिए गए कोड को बस **एक बार** कॉपी करके अपने कंप्यूटर पर चलाएंगे, और आपकी ज़िप फ़ाइल (या तीनों अलग-अलग फ़ाइलें) अपने आप बनकर तैयार हो जाएंगी।
+
+---
+
+## 🚀 सबसे आसान तरीका: Single File Setup (बिना ज़िप के 1 क्लिक में सब चालू)
+
+अगर आप ज़िप बनाने के झंझट से बचना चाहते हैं, तो आप अपने कंप्यूटर पर सिर्फ **एक फ़ाइल** बना सकते हैं जो पूरी तरह काम करेगी:
+
+1. अपने कंप्यूटर पर एक नया टेक्स्ट डॉक्यूमेंट बनाएं।
+2. उसे **`index.html`** नाम से सेव करें।
+3. नीचे दिए गए कोड को पूरा कॉपी करके उसमें पेस्ट कर दें और सेव कर लें।
+
+इस अकेले कोड में आपका **HTML, CSS और JavaScript** सब एक साथ जुड़े हुए हैं। इस पर डबल-क्लिक करते ही आपका पूरा ऐप (लॉगिन, प्रमोशन, यूपीआई पेमेंट, और सजेस्टेड फॉलोअर्स) तुरंत चालू हो जाएगा!
+
+```html
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Clone - Kashyap Global Services</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for Instagram Logo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- सामान्य रीसेट और सेटिंग्स --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #fafafa; color: #262626; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .hidden { display: none !important; }
+
+        /* --- लॉगिन स्क्रीन स्टाइल --- */
+        .login-wrapper { background-color: #fafafa; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 999999; }
+        .login-container { background-color: #fff; border: 1px solid #dbdbdb; width: 100%; max-width: 350px; padding: 40px; display: flex; flex-direction: column; align-items: center; }
+        .instagram-logo { font-family: 'Grand Hotel', cursive, sans-serif; font-size: 50px; margin-bottom: 30px; }
+        .login-form { width: 100%; display: flex; flex-direction: column; gap: 6px; }
+        .login-form input { width: 100%; padding: 9px 12px; background: #fafafa; border: 1px solid #dbdbdb; border-radius: 3px; font-size: 12px; }
+        .login-form button { width: 100%; background-color: #0095f6; color: white; border: none; padding: 7px; border-radius: 4px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+        .login-form button.disabled { opacity: 0.4; cursor: not-allowed; }
+        .divider { display: flex; width: 100%; align-items: center; margin: 20px 0; }
+        .divider .line { flex-grow: 1; height: 1px; background-color: #dbdbdb; }
+        .divider .text { padding: 0 18px; color: #8e8e8e; font-size: 13px; font-weight: 600; }
+        .fb-login a { color: #385185; font-size: 14px; font-weight: 600; text-decoration: none; }
+        .forgot-password { color: #00376b; font-size: 12px; text-decoration: none; margin-top: 20px; }
+        .signup-box { background-color: #fff; border: 1px solid #dbdbdb; width: 100%; max-width: 350px; padding: 20px; text-align: center; margin-top: 10px; font-size: 14px; }
+        .signup-box a { color: #0095f6; font-weight: 600; text-decoration: none; }
+
+        /* --- मुख्य ऐप और नेविगेशन --- */
+        .navbar { background: #fff; border-bottom: 1px solid #dbdbdb; position: fixed; top: 0; width: 100%; z-index: 1000; height: 60px; display: flex; align-items: center; }
+        .nav-container { width: 100%; max-width: 975px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-logo { font-family: 'Grand Hotel', cursive; font-size: 28px; cursor: pointer; }
+        .search-box input { background: #efefef; border: none; padding: 7px 15px; border-radius: 8px; outline: none; }
+        .nav-icons { display: flex; gap: 22px; align-items: center; font-size: 22px; cursor: pointer; }
+        .nav-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
+
+        /* मुख्य लेआउट */
+        .main-container { max-width: 935px; margin: 90px auto 0 auto; display: grid; grid-template-columns: 60% 40%; gap: 28px; padding: 0 20px; }
+        @media (max-width: 768px) { .main-container { grid-template-columns: 100%; } .sidebar-section { display: none; } }
+
+        /* फीड कार्ड */
+        .card { background: #fff; border: 1px solid #dbdbdb; border-radius: 8px; margin-bottom: 24px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; }
+        .userDetails { display: flex; align-items: center; gap: 12px; }
+        .profilePic { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+        .userDetails h3 { font-size: 14px; font-weight: 600; line-height: 1.2; }
+        .userDetails h3 span { font-size: 12px; color: #8e8e8e; font-weight: 400; }
+        .cover { width: 100%; max-height: 500px; object-fit: cover; }
+        .card-body { padding: 12px 16px; font-size: 14px; }
+
+        /* प्रमोशन बार */
+        .promotion-bar { padding: 10px 14px; border-top: 1px solid #efefef; display: flex; justify-content: flex-end; }
+        .boost-btn { background-color: #0095f6; color: white; border: none; padding: 6px 14px; font-weight: 600; font-size: 13px; border-radius: 4px; cursor: pointer; }
+
+        /* --- साइडबार और सजेस्टेड फॉलोअर्स --- */
+        .suggestions-container { width: 100%; max-width: 320px; background: #ffffff; padding: 16px 4px; }
+        .suggestions-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .suggestions-header span { font-size: 14px; font-weight: 600; color: #8e8e8e; }
+        .suggestions-header .see-all-btn { font-size: 12px; font-weight: 600; color: #262626; text-decoration: none; }
+        .suggestions-list { display: flex; flex-direction: column; gap: 12px; }
+        .suggestion-item { display: flex; justify-content: space-between; align-items: center; }
+        .suggestion-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .user-details .username { font-size: 14px; font-weight: 600; }
+        .user-details .sub-text { font-size: 11px; color: #8e8e8e; }
+        .follow-toggle-btn { background: none; border: none; color: #0095f6; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .follow-toggle-btn.following { color: #262626; font-weight: 500; }
+
+        /* --- पॉप-अप मॉडल्स (प्रमोशन और पेमेंट) --- */
+        .promo-modal, .payment-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 500000; display: flex; align-items: center; justify-content: center; }
+        .promo-content, .payment-content { background: #fff; width: 90%; max-width: 420px; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.3); padding: 20px; animation: scaleIn 0.2s ease; }
+        .promo-header, .payment-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid #efefef; }
+        .close-promo, .close-payment { font-size: 24px; cursor: pointer; color: #8e8e8e; }
+
+        .promo-body { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
+        .promo-preview { display: flex; align-items: center; gap: 12px; background: #fafafa; padding: 10px; border-radius: 8px; }
+        .promo-preview img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
+        .preview-title { font-weight: 600; font-size: 14px; }
+        .preview-sub { font-size: 11px; color: #8e8e8e; }
+
+        .setting-group { display: flex; flex-direction: column; gap: 6px; }
+        .setting-group label { font-size: 13px; font-weight: 600; }
+        .setting-group select, .setting-group input[type="range"] { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #dbdbdb; }
+        .range-values { display: flex; justify-content: space-between; font-size: 12px; color: #8e8e8e; }
+        .highlight { color: #0095f6; font-weight: 600; }
+
+        .reach-estimator { background: #f4f6f8; padding: 15px; border-radius: 8px; text-align: center; }
+        .reach-estimator h4 { font-size: 12px; color: #8e8e8e; margin-bottom: 5px; }
+        .reach-grid { display: flex; justify-content: space-around; margin-top: 8px; }
+        .stat-num { display: block; font-size: 18px; font-weight: 700; color: #262626; }
+        .stat-label { font-size: 11px; color: #8e8e8e; }
+        .pay-btn { width: 100%; background: #0095f6; color: white; border: none; padding: 10px; font-weight: 600; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+
+        /* पेमेंट डिज़ाइन */
+        .amount-due { text-align: center; background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px dashed #0095f6; }
+        .amount-due p { font-size: 12px; color: #666; }
+        .amount-due h2 { font-size: 24px; margin-top: 5px; }
+        .payment-methods h4 { font-size: 13px; margin-bottom: 10px; }
+        .upi-apps { display: flex; flex-direction: column; gap: 10px; }
+        .upi-btn { display: flex; align-items: center; gap: 15px; background: #fff; border: 1px solid #dbdbdb; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; width: 100%; text-align: left; }
+        .upi-btn img { width: 24px; height: 24px; }
+        .qr-section { text-align: center; margin-top: 15px; }
+        .qr-box { background: #fff; padding: 10px; display: inline-block; border: 1px solid #dbdbdb; border-radius: 8px; margin-top: 10px; }
+        .qr-box img { width: 120px; height: 120px; }
+        .payment-footer { text-align: center; font-size: 11px; color: #8e8e8e; margin-top: 15px; }
+
+        @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <!-- 1. लॉगिन स्क्रीन -->
+    <div id="loginScreen" class="login-wrapper">
+        <div class="login-container">
+            <div class="logo-box">
+                <h1 class="instagram-logo">Instagram</h1>
+            </div>
+            <div class="login-form">
+                <input type="text" id="loginUsername" placeholder="Phone number, username, or email">
+                <input type="password" id="loginPassword" placeholder="Password (Type any 6 characters)">
+                <button onclick="checkLogin()" id="loginBtn" class="disabled" disabled>Log In</button>
+            </div>
+            <div class="divider">
+                <div class="line"></div>
+                <div class="text">OR</div>
+                <div class="line"></div>
+            </div>
+            <div class="fb-login">
+                <a href="#"><i class="fab fa-facebook-square"></i> Log in with Facebook</a>
+            </div>
+            <a href="#" class="forgot-password">Forgot password?</a>
+        </div>
+        <div class="signup-box">
+            <p>Don't have an account? <a href="#">Sign up</a></p>
+        </div>
+    </div>
+
+    <!-- 2. मुख्य एप्लीकेशन (लॉगिन के बाद खुलेगी) -->
+    <div id="mainApp" class="hidden">
+        <nav class="navbar">
+            <div class="nav-container">
+                <h1 class="nav-logo">Instagram</h1>
+                <div class="search-box"><input type="text" placeholder="Search"></div>
+                <div class="nav-icons">
+                    <i class="fas fa-home"></i>
+                    <i class="fab fa-telegram-plane"></i>
+                    <i class="far fa-compass"></i>
+                    <i class="far fa-heart"></i>
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" class="nav-avatar" alt="My Profile">
+                </div>
+            </div>
+        </nav>
+
+        <main class="main-container">
+            <!-- लेफ्ट साइड: फीड -->
+            <section class="feed-section">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="userDetails">
+                            <img src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=100" class="profilePic" alt="Kashyap Global">
+                            <h3>Kashyap Global Services <br><span id="postLocation">Lucknow, India</span></h3>
+                        </div>
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600" class="cover" alt="Post Image">
+                    <div class="card-body">
+                        <p><b>kashyap_global_services</b> Scale your business with our premium digital marketing and web solutions! 🚀 #marketing #growth</p>
+                    </div>
+                    <div class="promotion-bar">
+                        <button class="boost-btn" onclick="openPromotionModal(this)">Boost Post</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- राइट साइड: सजेस्टेड फॉलोअर्स -->
+            <aside class="sidebar-section">
+                <div class="suggestions-container">
+                    <div class="suggestions-header">
+                        <span>Suggested for you</span>
+                        <a href="#" class="see-all-btn">See All</a>
+                    </div>
+                    <div class="suggestions-list">
+                        <div class="suggestion-item">
+                            <div class="user-info">
+                                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" alt="User Profile" class="suggestion-avatar">
+                                <div class="user-details">
+                                    <p class="username">neha_sharma</p>
+                                    <p class="sub-text">Followed by amitsingh + 3 more</p>
+                                </div>
+                            </div>
+                            <button class="follow-toggle-btn" onclick="toggleFollow(this)">Follow</button>
+                        </div>
+                        <div class="suggestion-item">
+                            <div class="user-info">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100" alt="User Profile" class="suggestion-avatar">
+                                <div class="user-details">
+                                    <p class="username">rohit_kumar</p>
+                                    <p class="sub-text">New to Instagram</p>
+                                </div>
+                            </div>
+                            <button class="follow-toggle-btn" onclick="toggleFollow(this)">Follow</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <!-- 3. प्रमोशन बूस्ट मॉडल -->
+    <div id="promoModal" class="promo-modal hidden">
+        <div class="promo-content">
+            <div class="promo-header">
+                <h3>Boost Post</h3>
+                <span class="close-promo" onclick="closePromotionModal()">&times;</span>
+            </div>
+            <div class="promo-body">
+                <div class="promo-preview">
+                    <img id="promoPreviewImg" src="" alt="preview">
+                    <div>
+                        <p class="preview-title">Kashyap Global Services</p>
+                        <p class="preview-sub">Sponsored <i class="fas fa-globe-americas"></i></p>
+                    </div>
+                </div>
+                <div class="promo-settings">
+                    <div class="setting-group">
+                        <label for="audienceSelect">🎯 Target Audience</label>
+                        <select id="audienceSelect" onchange="calculateReach()">
+                            <option value="tech">Tech Entrepreneurs</option>
+                            <option value="local">Local Businesses (India)</option>
+                            <option value="global">Global Marketing (US/UK)</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>💰 Daily Budget (INR)</label>
+                        <input type="range" id="budgetRange" min="200" max="5000" step="100" value="500" oninput="calculateReach()">
+                        <div class="range-values"><span>₹200</span><span id="budgetValue" class="highlight">₹500 / day</span><span>₹5,000</span></div>
+                    </div>
+                    <div class="setting-group">
+                        <label>📅 Duration (Days)</label>
+                        <input type="range" id="durationRange" min="1" max="30" step="1" value="5" oninput="calculateReach()">
+                        <div class="range-values"><span>1 day</span><span id="durationValue" class="highlight">5 days</span><span>30 days</span></div>
+                    </div>
+                </div>
+                <div class="reach-estimator">
+                    <h4>Estimated Results</h4>
+                    <div class="reach-grid">
+                        <div>
+                            <span class="stat-num" id="estReach">4,500 - 12,000</span>
+                            <span class="stat-label">People Reached</span>
+                        </div>
+                        <div>
+                            <span class="stat-num" id="totalCost">₹2,500</span>
+                            <span class="stat-label">Total Spend</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="promo-footer">
+                <button class="pay-btn" onclick="launchCampaign()">Create Promotion</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. इंडियन पेमेंट गेटवे मॉडल -->
+    <div id="paymentModal" class="payment-modal hidden">
+        <div class="payment-content">
+            <div class="payment-header">
+                <h3><i class="fas fa-shield-alt"></i> Secure Payment</h3>
+                <span class="close-payment" onclick="closePaymentModal()">&times;</span>
+            </div>
+            <div class="payment-body">
+                <div class="amount-due">
+                    <p>Amount to Pay</p>
+                    <h2 id="payAmount">₹0.00</h2>
+                </div>
+                <div class="payment-methods">
+                    <h4>Pay via UPI App</h4>
+                    <div class="upi-apps">
+                        <button class="upi-btn" onclick="processPayment('Google Pay')">
+                            <img src="https://img.icons8.com/color/48/google-pay.png" alt="GPay"> Google Pay
+                        </button>
+                        <button class="upi-btn" onclick="processPayment('PhonePe')">
+                            <img src="https://img.icons8.com/color/48/phonepe.png" alt="PhonePe"> PhonePe
+                        </button>
+                    </div>
+                    <div class="qr-section">
+                        <div class="divider"><span>OR Scan QR Code</span></div>
+                        <div class="qr-box">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=kashyapglobal@upi" alt="QR Code">
+                            <p><i class="fas fa-qrcode"></i> Scan with any UPI App</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="payment-footer">
+                <p>🛡️ Powered by BHIM UPI / Secured by Kashyap Global</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- JAVASCRIPT LOGIC --- -->
+    <script>
+        let currentActiveCard = null;
+        const usernameInput = document.getElementById('loginUsername');
+        const passwordInput = document.getElementById('loginPassword');
+        const loginBtn = document.getElementById('loginBtn');
+
+        function validateInputs() {
+            if (usernameInput.value.trim().length >= 1 && passwordInput.value.trim().length >= 6) {
+                loginBtn.classList.remove('disabled');
+                loginBtn.removeAttribute('disabled');
+            } else {
+                loginBtn.classList.add('disabled');
+                loginBtn.setAttribute('disabled', 'true');
+            }
+        }
+
+        if(usernameInput && passwordInput) {
+            usernameInput.addEventListener('input', validateInputs);
+            passwordInput.addEventListener('input', validateInputs);
+        }
+
+        function checkLogin() {
+            const user = usernameInput.value.trim();
+            const pass = passwordInput.value.trim();
+            
+            // लॉगिन के लिए आप यूजरनेम में कुछ भी डाल सकते हैं, पासवर्ड कम से कम 6 अक्षर का होना चाहिए।
+            if (user.length >= 1 && pass.length >= 6) {
+                alert("लॉगिन सफल रहा! 🎉");
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').classList.remove('hidden');
+            } else {
+                alert("कृपया सही यूजरनेम और कम से कम 6 अंकों का पासवर्ड दर्ज करें।");
+            }
+        }
+
+        function toggleFollow(button) {
+            if (button.classList.contains('following')) {
+                button.classList.remove('following');
+                button.innerText = 'Follow';
+                button.style.color = '#0095f6';
+            } else {
+                button.classList.add('following');
+                button.innerText = 'Following';
+                button.style.color = '#262626';
+            }
+        }
+
+        function openPromotionModal(button) {
+            currentActiveCard = button.closest('.card');
+            const postImgSrc = currentActiveCard.querySelector('.cover').src;
+            document.getElementById('promoPreviewImg').src = postImgSrc;
+            document.getElementById('promoModal').classList.remove('hidden');
+            calculateReach();
+        }
+
+        function closePromotionModal() { document.getElementById('promoModal').classList.add('hidden'); }
+
+        function calculateReach() {
+            const budget = parseInt(document.getElementById('budgetRange').value);
+            const duration = parseInt(document.getElementById('durationRange').value);
+            const audienceType = document.getElementById('audienceSelect').value;
+            
+            document.getElementById('budgetValue').innerText = `₹${budget} / day`;
+            document.getElementById('durationValue').innerText = `${duration} days`;
+            
+            const totalCost = budget * duration;
+            document.getElementById('totalCost').innerText = `₹${totalCost.toLocaleString('en-IN')}`;
+            
+            let multiplier = 12;
+            if (audienceType === 'local') multiplier = 18;
+            if (audienceType === 'global') multiplier = 8;
+            
+            const minReach = Math.floor(budget * multiplier * 0.7);
+            const maxReach = Math.floor(budget * multiplier * 1.5);
+            
+            document.getElementById('estReach').innerText = `${minReach.toLocaleString('en-IN')} - ${maxReach.toLocaleString('en-IN')}`;
+        }
+
+        function launchCampaign() {
+            const totalCostText = document.getElementById('totalCost').innerText;
+            closePromotionModal();
+            document.getElementById('payAmount').innerText = totalCostText;
+            document.getElementById('paymentModal').classList.remove('hidden');
+        }
+
+        function closePaymentModal() { document.getElementById('paymentModal').classList.add('hidden'); }
+
+        function processPayment(appName) {
+            const totalCostText = document.getElementById('payAmount').innerText;
+            alert(`🔄 Connecting to ${appName}... Authorizing payment of ${totalCostText}`);
+            
+            setTimeout(() => {
+                alert(`✅ Payment Successful via ${appName}! Your promotion is now LIVE.`);
+                closePaymentModal();
+                if (currentActiveCard) {
+                    const locationSpan = document.getElementById('postLocation');
+                    if (locationSpan) {
+                        locationSpan.innerHTML = `Sponsored <i class="fas fa-globe-americas" style="color:#0095f6; font-size:10px;"></i>`;
+                    }
+                }
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
+
+```

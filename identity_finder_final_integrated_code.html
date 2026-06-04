@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+
+<html lang="hi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Identity Finder - Institutional Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fc; color: #003366; }
+        .screen { display: none; min-height: 100vh; flex-direction: column; }
+        .screen.active { display: flex; }
+        .btn-primary { background-color: #003366; color: white; padding: 12px; border-radius: 8px; font-weight: bold; text-align: center; transition: all 0.2s; border: none; cursor: pointer; }
+        .btn-primary:active { transform: scale(0.98); background-color: #002244; }
+        .btn-secondary { border: 1px solid #003366; color: #003366; padding: 12px; border-radius: 8px; font-weight: bold; text-align: center; background: transparent; cursor: pointer; }
+        .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: box-shadow 0.2s; }
+        .card:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        
+        /* Scanning Animation */
+        .laser-line { 
+            position: absolute; 
+            left: 0; 
+            width: 100%; 
+            height: 3px; 
+            background: rgba(255,165,0,0.8); 
+            box-shadow: 0 0 15px 2px orange; 
+            animation: scan 2s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+            z-index: 10;
+        }
+        @keyframes scan { 
+            0% { top: 0%; opacity: 0; } 
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; } 
+        }
+
+        .success-badge { animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes pop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* Download Animation */
+        @keyframes download-progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+        .progress-bar-fill { animation: download-progress 2s ease-in-out forwards; }
+        
+        /* Pulse Animation */
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .animate-pulse-soft { animation: pulse-soft 2s infinite; }
+
+        /* Document Styling */
+        .id-card-glow { box-shadow: 0 10px 25px -5px rgba(0, 51, 102, 0.3); }
+        .tab-active { color: #ea580c; border-top: 2px solid #ea580c; }
+        
+        /* Mobile-first constraints */
+        .content-container { width: 100%; max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; background: #f7f9fc; }
+    </style>
+</head>
+<body class="bg-gray-200">
+<div class="content-container shadow-2xl overflow-hidden flex flex-col bg-white">
+<!-- Screen 1: Home -->
+<div class="screen active" id="home">
+<header class="flex justify-between items-center p-4 bg-white border-b sticky top-0 z-20">
+<i class="material-icons text-blue-900">account_balance</i>
+<h1 class="text-lg font-bold text-blue-900">Identity Portal</h1>
+<i class="material-icons text-gray-400">account_circle</i>
+</header>
+<main class="p-4 flex-grow pb-24">
+<p class="text-xs uppercase tracking-widest text-gray-500 mb-1 font-bold">Secure Access</p>
+<h2 class="text-2xl font-bold mb-6 text-blue-900">Welcome, Citizen</h2>
+<div class="card cursor-pointer flex items-center group" onclick="selectDocType('Aadhaar')">
+<div class="bg-blue-50 p-3 rounded-xl mr-4 group-hover:bg-blue-100 transition-colors">
+<i class="material-icons text-blue-600">fingerprint</i>
+</div>
+<div class="flex-grow">
+<h3 class="font-bold text-lg text-blue-900">Find Aadhaar</h3>
+<p class="text-xs text-gray-500">Retrieve your 12-digit UID document.</p>
+</div>
+<i class="material-icons text-gray-300">chevron_right</i>
+</div>
+<div class="card cursor-pointer flex items-center group" onclick="selectDocType('PAN')">
+<div class="bg-orange-50 p-3 rounded-xl mr-4 group-hover:bg-orange-100 transition-colors">
+<i class="material-icons text-orange-600">credit_card</i>
+</div>
+<div class="flex-grow">
+<h3 class="font-bold text-lg text-blue-900">Find PAN</h3>
+<p class="text-xs text-gray-500">Access your Income Tax Dept. records.</p>
+</div>
+<i class="material-icons text-gray-300">chevron_right</i>
+</div>
+<div class="card cursor-pointer flex items-center group" onclick="selectDocType('SIM')">
+<div class="bg-green-50 p-3 rounded-xl mr-4 group-hover:bg-green-100 transition-colors">
+<i class="material-icons text-green-600">sim_card</i>
+</div>
+<div class="flex-grow">
+<h3 class="font-bold text-lg text-blue-900">SIM Details</h3>
+<p class="text-xs text-gray-500">Verify mobile numbers linked to your ID.</p>
+</div>
+<i class="material-icons text-gray-300">chevron_right</i>
+</div>
+<div class="mt-8">
+<h3 class="font-bold text-blue-900 mb-4 text-sm px-1">RECENT ACTIVITY</h3>
+<div class="bg-white rounded-xl p-4 border border-gray-100 flex justify-between items-center mb-2 shadow-sm">
+<div class="flex items-center">
+<div class="bg-green-50 p-2 rounded-lg mr-3">
+<i class="material-icons text-green-500 text-sm">description</i>
+</div>
+<div>
+<p class="font-semibold text-sm text-blue-900">Aadhaar Retrieval</p>
+<p class="text-[10px] text-gray-400">Today, 10:45 AM</p>
+</div>
+</div>
+<span class="text-[10px] bg-green-100 text-green-700 px-2 py-1 rounded-full font-bold">SUCCESS</span>
+</div>
+</div>
+</main>
+<nav class="bg-white border-t flex justify-around items-center p-3 fixed bottom-0 w-full max-w-[480px] z-30">
+<button class="flex flex-col items-center tab-active pt-1 w-1/4" onclick="showScreen('home')">
+<i class="material-icons">home</i><span class="text-[10px] mt-1 font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center text-gray-400 pt-1 w-1/4" onclick="showScreen('preview')">
+<i class="material-icons">visibility</i><span class="text-[10px] mt-1 font-medium">Preview</span>
+</button>
+<button class="flex flex-col items-center text-gray-400 pt-1 w-1/4">
+<i class="material-icons">security</i><span class="text-[10px] mt-1 font-medium">Security</span>
+</button>
+<button class="flex flex-col items-center text-gray-400 pt-1 w-1/4">
+<i class="material-icons">person</i><span class="text-[10px] mt-1 font-medium">Profile</span>
+</button>
+</nav>
+</div>
+<!-- Screen 2: Select Document -->
+<div class="screen bg-white" id="select-doc">
+<header class="p-4 border-b flex items-center sticky top-0 bg-white z-20">
+<button class="p-1" onclick="showScreen('home')"><i class="material-icons text-blue-900">arrow_back</i></button>
+<h1 class="ml-4 font-bold text-blue-900">Select Document</h1>
+</header>
+<main class="p-6">
+<div class="text-center mb-8">
+<h2 class="text-2xl font-bold text-blue-900">Choose Document</h2>
+<p class="text-gray-500 text-sm mt-2">Select the verified identity you wish to retrieve from the national vault.</p>
+</div>
+<div class="border-2 rounded-2xl p-5 mb-4 transition-all cursor-pointer border-gray-100" id="aadhaar-option" onclick="updateSelection('Aadhaar')">
+<div class="flex justify-between items-start">
+<div class="bg-blue-900 text-white p-3 rounded-xl mb-4"><i class="material-icons">fingerprint</i></div>
+<div class="selection-indicator hidden"><i class="material-icons text-blue-600">check_circle</i></div>
+</div>
+<h3 class="font-bold text-lg text-blue-900">Aadhaar Card</h3>
+<p class="text-xs text-gray-500 leading-relaxed">Unique Identification Authority of India (UIDAI) digital document retrieval.</p>
+</div>
+<div class="border-2 rounded-2xl p-5 mb-4 transition-all cursor-pointer border-gray-100" id="pan-option" onclick="updateSelection('PAN')">
+<div class="flex justify-between items-start">
+<div class="bg-blue-900 text-white p-3 rounded-xl mb-4"><i class="material-icons">credit_card</i></div>
+<div class="selection-indicator hidden"><i class="material-icons text-blue-600">check_circle</i></div>
+</div>
+<h3 class="font-bold text-lg text-blue-900">PAN Card</h3>
+<p class="text-xs text-gray-500 leading-relaxed">Income Tax Department Permanent Account Number official digital record.</p>
+</div>
+<div class="border-2 rounded-2xl p-5 mb-10 transition-all cursor-pointer border-gray-100" id="sim-option" onclick="updateSelection('SIM')">
+<div class="flex justify-between items-start">
+<div class="bg-blue-900 text-white p-3 rounded-xl mb-4"><i class="material-icons">sim_card</i></div>
+<div class="selection-indicator hidden"><i class="material-icons text-blue-600">check_circle</i></div>
+</div>
+<h3 class="font-bold text-lg text-blue-900">SIM Details</h3>
+<p class="text-xs text-gray-500 leading-relaxed">Telecom Regulatory Authority of India (TRAI) subscriber data retrieval.</p>
+</div>
+<button class="w-full btn-primary shadow-lg shadow-blue-900/20" onclick="proceedToVerification()">Proceed to Verification</button>
+<p class="text-center text-[10px] text-gray-400 mt-6 px-4">By proceeding, you agree to allow the system to perform biometric matching against Govt. databases.</p>
+</main>
+</div>
+<!-- Screen 3: Verification -->
+<div class="screen bg-slate-900 text-white" id="verification">
+<header class="p-4 flex justify-between items-center bg-slate-900/80 backdrop-blur-md sticky top-0 z-20">
+<button class="p-1" onclick="showScreen('select-doc')"><i class="material-icons">arrow_back</i></button>
+<h1 class="font-bold tracking-tight">Face Verification</h1>
+<i class="material-icons text-blue-400">account_balance</i>
+</header>
+<main class="flex-grow flex flex-col items-center justify-center p-8">
+<div class="w-full flex flex-col items-center" id="scan-ui">
+<div class="text-center mb-10">
+<h2 class="text-xl font-bold mb-2">Position your face</h2>
+<p class="text-slate-400 text-sm">Align your head within the frame and look directly at the camera.</p>
+</div>
+<div class="relative w-64 h-64 border-2 border-orange-500/50 rounded-[40px] overflow-hidden mb-10 shadow-[0_0_50px_rgba(249,115,22,0.2)]">
+<div class="absolute inset-0 bg-slate-800 flex items-center justify-center">
+<i class="material-icons text-8xl text-slate-700">face</i>
+</div>
+<div class="laser-line" id="laser"></div>
+<div class="absolute inset-0 border-[16px] border-slate-900 opacity-60"></div>
+</div>
+<div class="grid grid-cols-3 gap-6 mb-12 w-full max-w-xs text-center">
+<div class="flex flex-col items-center">
+<div class="bg-green-500/20 p-2 rounded-full mb-1">
+<i class="material-icons text-green-500 text-sm">light_mode</i>
+</div>
+<span class="text-[10px] text-slate-400">Lighting</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="bg-green-500/20 p-2 rounded-full mb-1">
+<i class="material-icons text-green-500 text-sm">check_circle</i>
+</div>
+<span class="text-[10px] text-slate-400">Distance</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="bg-orange-500/20 p-2 rounded-full mb-1">
+<i class="material-icons text-orange-500 text-sm" id="stability-icon">motion_photos_on</i>
+</div>
+<span class="text-[10px] text-slate-400">Stability</span>
+</div>
+</div>
+<button class="w-full btn-primary bg-blue-600 hover:bg-blue-500 border-none py-4 text-lg" id="verify-btn" onclick="startSimulatedScan()">Verify &amp; Retrieve</button>
+</div>
+<!-- Success State -->
+<div class="hidden w-full flex flex-col items-center text-center" id="success-ui">
+<div class="bg-green-500 w-24 h-24 rounded-full flex items-center justify-center mb-6 success-badge shadow-lg shadow-green-500/30">
+<i class="material-icons text-5xl">check</i>
+</div>
+<h2 class="text-2xl font-bold mb-3 text-white">Verification Successful</h2>
+<p class="text-slate-400 text-sm mb-12 px-6">Identity confirmed via biometric matching with national database.</p>
+<button class="w-full btn-primary bg-green-600 hover:bg-green-500 border-none py-4" onclick="showResult()">View Details</button>
+</div>
+</main>
+</div>
+<!-- Screen 4: Result -->
+<div class="screen bg-gray-50" id="result">
+<header class="p-4 flex items-center border-b bg-white sticky top-0 z-20">
+<button class="p-1" onclick="showScreen('home')"><i class="material-icons text-blue-900">home</i></button>
+<h1 class="ml-4 font-bold text-blue-900" id="result-title">Retrieval Complete</h1>
+</header>
+<main class="p-4 pb-20">
+<!-- PAN Card View -->
+<div class="hidden" id="pan-result">
+<div class="bg-blue-900 text-white rounded-2xl overflow-hidden shadow-2xl id-card-glow mb-6">
+<div class="px-5 py-3 border-b border-blue-800 flex justify-between items-center bg-blue-900">
+<div class="text-[9px] font-bold leading-tight uppercase">INCOME TAX DEPARTMENT<br/>GOVT. OF INDIA</div>
+<i class="material-icons text-xl">account_balance</i>
+</div>
+<div class="p-5 bg-white text-blue-900 flex">
+<div class="w-20 h-24 bg-gray-100 rounded-lg mr-4 flex items-center justify-center border border-gray-200">
+<i class="material-icons text-5xl text-gray-300">person</i>
+</div>
+<div class="flex-grow">
+<p class="text-[8px] uppercase font-bold text-gray-400 tracking-tighter">Name / नाम</p>
+<p class="font-bold text-base leading-tight mb-2">CITIZEN USER</p>
+<p class="text-[8px] uppercase font-bold text-gray-400 tracking-tighter">DOB / जन्म तिथि</p>
+<p class="font-bold text-sm leading-tight mb-2">15/08/1985</p>
+<p class="text-[8px] uppercase font-bold text-gray-400 tracking-tighter">PAN NUMBER</p>
+<p class="font-bold tracking-widest text-lg">ABCDE1234F <span class="text-green-600 text-[10px] ml-1 font-bold italic align-middle">✓</span></p>
+</div>
+</div>
+<div class="bg-gray-50 p-2 text-center text-[9px] text-gray-400 border-t">
+                        Digital copy digitally signed on <span class="current-date">24-May-2024</span>
+</div>
+</div>
+</div>
+<!-- Aadhaar Card View -->
+<div class="hidden" id="aadhaar-result">
+<div class="bg-white rounded-2xl overflow-hidden shadow-2xl id-card-glow mb-6 border-t-8 border-orange-500">
+<div class="p-4 flex justify-between items-center border-b border-gray-100">
+<img alt="UIDAI logo" class="w-10 h-10 opacity-20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBr_pbYfsfCg7MMk49xwtidxDw2c-tu8ooRadHssEYpsi8ofn4uryZ9tlw5C0HcBjH-PC_3aXF_Zr0Q4Wk2ER173_OYiob6UF6Y6JDOdw8xceMWcUNo0RndwiNi40ZMm0_xbW7h-9vDWPyD6aB_IHHxkuJ-M8OrbQdW1N2UcvXcDJjM3VT8fDakI5MFecR4MHrW64ZgrTcbfPtxB2LVfmEc8u_o0XdBJ_bzIpvg2mYsDlAa0v2xQjI0jwKr-AkXCuKW_gKJDCkkRA"/>
+<div class="text-[10px] font-bold text-red-700 text-right uppercase">Unique Identification Authority of India</div>
+</div>
+<div class="p-5 flex">
+<div class="w-24 h-32 bg-gray-100 rounded-md mr-4 border border-gray-200 flex items-center justify-center">
+<i class="material-icons text-5xl text-gray-300">person</i>
+</div>
+<div class="flex-grow">
+<div class="mb-4">
+<p class="text-[9px] text-gray-400 font-bold uppercase">To</p>
+<p class="text-xs font-bold leading-tight">CITIZEN USER<br/>S/O RESIDENT NAME<br/>H NO 123, SECTOR 45<br/>NEW DELHI - 110001</p>
+</div>
+<div class="mt-4 pt-4 border-t border-dashed border-gray-300 text-center">
+<p class="text-lg font-bold tracking-[0.2em] text-blue-900">1234 5678 9012</p>
+<p class="text-[10px] font-bold text-red-600 uppercase mt-1 tracking-widest">Aadhaar - My Identity</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SIM Results View -->
+<div class="hidden" id="sim-result">
+<div class="bg-white rounded-2xl overflow-hidden shadow-xl mb-6 border border-gray-100">
+<div class="bg-blue-900 p-4 text-white flex justify-between items-center">
+<div>
+<h3 class="font-bold text-sm">Subscriber Detail Record</h3>
+<p class="text-[10px] opacity-75">Verification ID: #SR-99821</p>
+</div>
+<i class="material-icons">sim_card</i>
+</div>
+<div class="p-5 space-y-4">
+<div class="flex justify-between items-start border-b border-gray-50 pb-3">
+<div>
+<p class="text-[10px] uppercase text-gray-400 font-bold">Primary Mobile</p>
+<p class="text-lg font-bold text-blue-900">+91 98XXX XX001</p>
+</div>
+<span class="bg-green-100 text-green-700 text-[9px] px-2 py-1 rounded font-bold uppercase">Active</span>
+</div>
+<div class="grid grid-cols-2 gap-4 text-sm">
+<div>
+<p class="text-[10px] uppercase text-gray-400 font-bold">Subscriber Name</p>
+<p class="font-semibold text-blue-900">CITIZEN USER</p>
+</div>
+<div>
+<p class="text-[10px] uppercase text-gray-400 font-bold">Father's Name</p>
+<p class="font-semibold text-blue-900">MR. SENIOR CITIZEN</p>
+</div>
+<div class="col-span-2">
+<p class="text-[10px] uppercase text-gray-400 font-bold">Permanent Address / Village</p>
+<p class="font-semibold text-blue-900">Village Rampur, PO Sector 12, District Ghaziabad, UP - 201010</p>
+</div>
+<div>
+<p class="text-[10px] uppercase text-gray-400 font-bold">Operator</p>
+<p class="font-semibold text-blue-900">Digital Tele-Solutions</p>
+</div>
+<div>
+<p class="text-[10px] uppercase text-gray-400 font-bold">Activation Date</p>
+<p class="font-semibold text-blue-900">12 Jan 2021</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mb-6">
+<h4 class="text-xs font-bold text-gray-400 mb-3 uppercase px-1">Other Linked SIMs</h4>
+<div class="bg-white rounded-xl p-3 border border-gray-100 flex justify-between items-center mb-2">
+<div class="flex items-center">
+<i class="material-icons text-blue-400 mr-3">phone_iphone</i>
+<span class="text-sm font-semibold text-blue-900">+91 98XXX XX445</span>
+</div>
+<span class="text-[9px] text-gray-400 font-medium">Inactive</span>
+</div>
+</div>
+</div>
+<div id="action-buttons">
+<div class="space-y-3">
+<button class="w-full btn-primary flex justify-center items-center py-4 bg-blue-900" id="download-trigger" onclick="startDownload()">
+<i class="material-icons mr-2">file_download</i> Download Secure Copy
+                    </button>
+<button class="w-full btn-secondary flex justify-center items-center py-4 bg-white">
+<i class="material-icons mr-2">share</i> Share Access Code
+                    </button>
+</div>
+</div>
+<!-- Download Animation Overlay (Hidden) -->
+<div class="hidden mt-4 p-4 bg-blue-50 border border-blue-100 rounded-xl" id="download-overlay">
+<div class="flex justify-between items-center mb-3">
+<div class="flex items-center">
+<i class="material-icons text-blue-600 mr-2 animate-bounce">downloading</i>
+<span class="text-sm font-bold text-blue-900">Encrypting &amp; Packaging...</span>
+</div>
+<span class="text-xs font-bold text-blue-600" id="download-percent">0%</span>
+</div>
+<div class="w-full bg-blue-200 h-1.5 rounded-full overflow-hidden">
+<div class="progress-bar-fill bg-blue-600 h-full w-0" id="download-progress-bar"></div>
+</div>
+<p class="text-[10px] text-blue-400 mt-2 text-center uppercase tracking-wider font-bold">Do not close this window</p>
+</div>
+<div class="mt-8 bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start">
+<i class="material-icons text-blue-600 mr-3 text-xl">verified_user</i>
+<div>
+<p class="text-xs font-bold text-blue-900 mb-1">Official Document</p>
+<p class="text-[10px] text-blue-800 leading-normal">This record is digitally signed and valid for all official purposes as per the IT Act 2000 and governing regulations.</p>
+</div>
+</div>
+</main>
+</div>
+<!-- Screen 5: System Flow Preview -->
+<div class="screen bg-gray-50" id="preview">
+<header class="p-4 flex items-center bg-white border-b sticky top-0 z-20">
+<button class="p-1" onclick="showScreen('home')"><i class="material-icons text-blue-900">arrow_back</i></button>
+<h1 class="ml-4 font-bold text-blue-900">System Flow</h1>
+</header>
+<main class="p-6">
+<div class="text-center mb-10">
+<h2 class="text-xl font-bold text-blue-900">Identity Retrieval Protocol</h2>
+<p class="text-xs text-gray-500 mt-2">End-to-end secure document access workflow</p>
+</div>
+<div class="space-y-10 relative">
+<div class="absolute left-4 top-2 bottom-2 w-0.5 bg-blue-100"></div>
+<div class="relative pl-12">
+<div class="absolute left-0 w-8 h-8 bg-blue-900 text-white rounded-full flex items-center justify-center font-bold text-xs shadow-md">1</div>
+<h3 class="font-bold text-sm text-blue-900">Document Selection</h3>
+<p class="text-[11px] text-gray-500 mt-1">Authenticate through specific national database channels for Aadhaar, PAN or Telecom records.</p>
+</div>
+<div class="relative pl-12">
+<div class="absolute left-0 w-8 h-8 bg-blue-900 text-white rounded-full flex items-center justify-center font-bold text-xs shadow-md">2</div>
+<h3 class="font-bold text-sm text-blue-900">AI Face Verification</h3>
+<p class="text-[11px] text-gray-500 mt-1">Biometric liveness detection and facial mapping against identity photo.</p>
+</div>
+<div class="relative pl-12">
+<div class="absolute left-0 w-8 h-8 bg-blue-900 text-white rounded-full flex items-center justify-center font-bold text-xs shadow-md">3</div>
+<h3 class="font-bold text-sm text-blue-900">Database Handshake</h3>
+<p class="text-[11px] text-gray-500 mt-1">Encrypted retrieval of signed records from decentralized government nodes.</p>
+</div>
+<div class="relative pl-12">
+<div class="absolute left-0 w-8 h-8 bg-blue-900 text-white rounded-full flex items-center justify-center font-bold text-xs shadow-md">4</div>
+<h3 class="font-bold text-sm text-blue-900">Digital Possession</h3>
+<p class="text-[11px] text-gray-500 mt-1">Instant rendering of the official document with offline verification QR capability.</p>
+</div>
+</div>
+<button class="w-full btn-primary mt-12 bg-orange-600 shadow-lg shadow-orange-600/20" onclick="showScreen('select-doc')">Initiate Flow</button>
+</main>
+</div>
+</div>
+<script>
+    let selectedDocument = 'PAN'; 
+
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        const targetScreen = document.getElementById(id);
+        targetScreen.classList.add('active');
+        targetScreen.scrollTo(0,0);
+
+        if (id === 'verification') {
+            document.getElementById('scan-ui').classList.remove('hidden');
+            document.getElementById('success-ui').classList.add('hidden');
+            document.getElementById('laser').style.animation = 'none';
+            setTimeout(() => {
+                document.getElementById('laser').style.animation = 'scan 2s cubic-bezier(0.4, 0, 0.2, 1) infinite';
+            }, 100);
+        }
+
+        if (id === 'result') {
+            // Reset download state
+            document.getElementById('download-overlay').classList.add('hidden');
+            document.getElementById('download-trigger').disabled = false;
+            document.getElementById('download-trigger').style.opacity = '1';
+        }
+    }
+
+    function selectDocType(type) {
+        selectedDocument = type;
+        showScreen('select-doc');
+        updateSelection(type);
+    }
+
+    function updateSelection(type) {
+        selectedDocument = type;
+        const options = ['aadhaar', 'pan', 'sim'];
+        options.forEach(opt => {
+            const el = document.getElementById(opt + '-option');
+            const indicator = el.querySelector('.selection-indicator');
+            if (opt.toLowerCase() === type.toLowerCase()) {
+                el.classList.add('border-blue-600', 'bg-blue-50');
+                el.classList.remove('border-gray-100');
+                indicator.classList.remove('hidden');
+            } else {
+                el.classList.remove('border-blue-600', 'bg-blue-50');
+                el.classList.add('border-gray-100');
+                indicator.classList.add('hidden');
+            }
+        });
+    }
+
+    function proceedToVerification() {
+        showScreen('verification');
+    }
+
+    function startSimulatedScan() {
+        const btn = document.getElementById('verify-btn');
+        btn.innerHTML = 'Scanning Biometrics...';
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+
+        setTimeout(() => {
+            document.getElementById('stability-icon').classList.remove('text-orange-500');
+            document.getElementById('stability-icon').classList.add('text-green-500');
+            document.getElementById('stability-icon').innerText = 'check_circle';
+        }, 1200);
+
+        setTimeout(() => {
+            document.getElementById('scan-ui').classList.add('hidden');
+            document.getElementById('success-ui').classList.remove('hidden');
+            btn.innerHTML = 'Verify & Retrieve';
+            btn.disabled = false;
+            btn.style.opacity = '1';
+        }, 3000);
+    }
+
+    function showResult() {
+        document.getElementById('result-title').innerText = selectedDocument + ' Details Retrieved';
+        
+        document.getElementById('aadhaar-result').classList.add('hidden');
+        document.getElementById('pan-result').classList.add('hidden');
+        document.getElementById('sim-result').classList.add('hidden');
+
+        if (selectedDocument === 'Aadhaar') {
+            document.getElementById('aadhaar-result').classList.remove('hidden');
+        } else if (selectedDocument === 'PAN') {
+            document.getElementById('pan-result').classList.remove('hidden');
+        } else {
+            document.getElementById('sim-result').classList.remove('hidden');
+        }
+        
+        updateDate();
+        showScreen('result');
+    }
+
+    function startDownload() {
+        const btn = document.getElementById('download-trigger');
+        const overlay = document.getElementById('download-overlay');
+        const bar = document.getElementById('download-progress-bar');
+        const percent = document.getElementById('download-percent');
+        
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        overlay.classList.remove('hidden');
+        
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 5;
+            bar.style.width = progress + '%';
+            percent.innerText = progress + '%';
+            
+            if (progress >= 100) {
+                clearInterval(interval);
+                percent.innerText = '100%';
+                setTimeout(() => {
+                    alert('Official digital copy has been saved to your secure downloads folder.');
+                    overlay.classList.add('hidden');
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    bar.style.width = '0%';
+                }, 500);
+            }
+        }, 100);
+    }
+
+    function updateDate() {
+        const now = new Date();
+        const dateStr = now.getDate() + '-' + now.toLocaleString('default', { month: 'short' }) + '-' + now.getFullYear();
+        document.querySelectorAll('.current-date').forEach(el => {
+            el.innerText = dateStr;
+        });
+    }
+
+    window.onload = updateDate;
+</script>
+</body></html>
